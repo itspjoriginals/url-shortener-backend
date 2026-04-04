@@ -1,14 +1,18 @@
 const express = require("express");
 const app = express();
+const cookieParser = require('cookie-parser');
 const path = require('path');
 const PORT = 8000;
 const urlRoute = require('./routes/url');
 const { connectDB } = require('./config/connect');
 const URL = require('./models/url');
 const staticRoute = require('./routes/staticRouter');
+const userRoute = require('./routes/user');
+const { restrictToLoggedInUserOnly, checkAuth } = require('./middlewares/auth');
 
 app.use(express.json());
 app.use(express.urlencoded({extended: false}));
+app.use(cookieParser());
 connectDB();
 
 app.set("view engine", "ejs");
@@ -22,8 +26,9 @@ app.get("/test", async(req, res) => {
 })
 
 
-app.use("/url", urlRoute);
-app.use("/", staticRoute);
+app.use("/url",restrictToLoggedInUserOnly, urlRoute);
+app.use("/",checkAuth, staticRoute);
+app.use("/user", userRoute);
 
 
 
