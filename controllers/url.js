@@ -18,9 +18,13 @@ const generateNewShortUrl = async(req, res) => {
     visitHistory: [],
   });
 
-  return res.json({
-    id: shortID,
+  return res.render('home', {
+    id: shortID
   })
+
+  // return res.json({
+  //   id: shortID,
+  // })
   } catch (error) {
     console.error("Something wrong in controllers");
     return res.status(403).json({

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+      color: #2c3e50;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-size: 1rem;
+      color: #7f8c8d;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #34495e;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid #d1d8e0;
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.2s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.875rem 1.5rem;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover {
+      background: #2980b9;
+    }
+
+    .result {
+      background: #e8f4fd;
+      border-radius: 8px;
+      padding: 0.875rem 1rem;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .result a {
+      color: #2980b9;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .result a:hover {
+      text-decoration: underline;
+    }
+
+    .links-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(149, 157, 165, 0.1);
+    }
+
+    .links-table th,
+    .links-table td {
+      text-align: left;
+      padding: 0.875rem 1rem;
+    }
+
+    .links-table th {
+      background: #f8fafc;
+      color: #34495e;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .links-table tbody tr {
+      border-bottom: 1px solid #e6eaf0;
+    }
+
+    .links-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .links-table td {
+      font-size: 0.95rem;
+      color: #4b5563;
+    }
+
+    .short-id {
+      font-weight: 500;
+      color: #2c3e50;
+    }
+
+    .redirect-url {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+      word-break: break-all;
+    }
+
+    .clicks {
+      font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      .links-table th,
+      .links-table td {
+        padding: 0.6rem 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔗 URL Shortener</h1>
+      <p class="subtitle">Shorten long links and track clicks in one place.</p>
+    </header>
+
+    <div class="card">
+      <form method="post" action="/url">
+        <div class="form-group">
+          <label for="url">Enter your URL</label>
+          <input
+            type="text"
+            id="url"
+            name="url"
+            placeholder="https://example.com"
+            required
+          />
+          <button type="submit">Generate Short URL</button>
+        </div>
+      </form>
+
+      <% if (locals.id) { %>
+        <div class="result">
+          <p>
+            URL Generated:
+            <a href="http://localhost:8000/url/<%= id %>" target="_blank">
+              http://localhost:8000/url/<%= id %>
+            </a>
+          </p>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (locals.urls && urls.length > 0) { %>
+      <div class="card">
+        <h2>Your Shortened Links</h2>
+        <table class="links-table">
+          <thead>
+            <tr>
+              <th>S.No</th>
+              <th>Short ID</th>
+              <th>Redirect URL</th>
+              <th>Clicks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% urls.forEach((url, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td class="short-id"><%= url.shortId %></td>
+                <td class="redirect-url"><%= url.redirectURL %></td>
+                <td class="clicks"><%= url.visitHistory.length %></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+</body>
+</html>
