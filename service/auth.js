@@ -1,14 +1,26 @@
-const sessionIdToUserMap = new Map();
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const setUser =  (id, user) => {
-  sessionIdToUserMap.set(id, user);
-}
+const JWT_SECRET = process.env.JWT_SECRET;
 
-const getUser = (id) => {
-  return sessionIdToUserMap.get(id);
-}
+const setUser = (user) => {
+  return jwt.sign(
+    {
+      _id: user._id,
+      email: user.email,
+      role: user.role,
+    },
+    JWT_SECRET,
+    { expiresIn: "1d" }
+  );
+};
 
-module.exports= {
-  setUser,
-  getUser
-}
+const getUser = (token) => {
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch {
+    return null;
+  }
+};
+
+module.exports = { setUser, getUser };

@@ -1,78 +1,81 @@
-const {nanoid} = require("nanoid");
+const { nanoid } = require("nanoid");
 const URL = require('../models/url');
+const validUrl = require('valid-url');
 
-const generateNewShortUrl = async(req, res) => {
+const generateNewShortUrl = async (req, res) => {
   try {
-    const body = req.body;
-  if(!body.url) {
-    return res.status(400).json({
-      error: "url is required",
+    const { url } = req.body;
+
+    if (!url)
+      return res.status(400).json({ message: "URL required" });
+
+    if (!validUrl.isUri(url))
+      return res.status(400).json({ message: "Invalid URL" });
+
+    const shortId = nanoid(8);
+
+    await URL.create({
+      shortId,
+      redirectURL: url,
+      visitHistory: [],
+      createdBy: req.user._id,
     });
+
+    return res.render("home", { id: shortId });
+
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
+};
 
-  const shortID = nanoid(8);
-
-  await URL.create({
-    shortId: shortID,
-    redirectURL: body.url,
-    visitHistory: [],
-    createdBy: req.user._id,
-  });
-
-  return res.render('home', {
-    id: shortID
-  })
-
-  // return res.json({
-  //   id: shortID,
-  // })
-  } catch (error) {
-    console.error("Something wrong in controllers");
-    return res.status(403).json({
-      success: false,
-      message: error.message
-    })
-  }
-}
-
-const handleGetAnalytics = async(req, res) => {
+const handleRedirect = async (req, res) => {
   try {
-    const shortId = req.params.shortId;
-    const result = await URL.findOne({shortId});
+    const { shortId } = req.params;
+
+    const entry = await URL.findOneAndUpdate(
+      { shortId },
+      {
+        $push: {
+          visitHistory: {
+            timestamp: Date.now(),
+            ip: req.ip,
+            userAgent: req.headers["user-agent"],
+          }
+        }
+      }
+    );
+
+    if (!entry)
+      return res.status(404).json({ message: "URL not found" });
+
+    return res.redirect(entry.redirectURL);
+
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+const handleGetAnalytics = async (req, res) => {
+  try {
+    const { shortId } = req.params;
+
+    const result = await URL.findOne({ shortId });
+
+    if (!result)
+      return res.status(404).json({ message: "Not found" });
+
     return res.json({
       totalClicks: result.visitHistory.length,
-      analytics: result.visitHistory,
-    })
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
+      data: result.visitHistory,
     });
-  }
-}
 
-const handleRedirect = async(req, res) => {
-  try {
-    const shortId = req.params.shortId;
-  const entry = await URL.findOneAndUpdate({
-    shortId
-  }, {$push: {
-        visitHistory: {
-          timestamp: Date.now(),
-        },
-  }})
-  res.redirect(entry.redirectURL);
-    
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: error.message,
-    })
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
   }
-}
+};
 
 module.exports = {
   generateNewShortUrl,
+  handleRedirect,
   handleGetAnalytics,
-  handleRedirect
 };

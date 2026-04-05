@@ -2,38 +2,39 @@ const express = require("express");
 const app = express();
 const cookieParser = require('cookie-parser');
 const path = require('path');
-const PORT = 8000;
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+
+const PORT = process.env.PORT || 8000;
+
 const urlRoute = require('./routes/url');
 const { connectDB } = require('./config/connect');
-const URL = require('./models/url');
 const staticRoute = require('./routes/staticRouter');
 const userRoute = require('./routes/user');
-const { restrictToLoggedInUserOnly, checkAuth } = require('./middlewares/auth');
+const { checkForAuthentication, restrictTo } = require('./middlewares/auth');
 
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
-app.use(cookieParser());
+// Security Middleware
+app.use(helmet());
+
+app.use(rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+}));
+
 connectDB();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(checkForAuthentication);
+
 app.set("view engine", "ejs");
-app.set("views", path.resolve("./views"))
+app.set("views", path.resolve("./views"));
 
-app.get("/test", async(req, res) => {
-  const allUrls = await URL.find({});
-  return res.render('home', {
-    urls: allUrls,
-  })
-})
-
-
-app.use("/url",restrictToLoggedInUserOnly, urlRoute);
-app.use("/",checkAuth, staticRoute);
+app.use("/url", restrictTo(["Normal", "Admin"]), urlRoute);
+app.use("/", staticRoute);
 app.use("/user", userRoute);
 
-
-
-
-
 app.listen(PORT, () => {
-  console.log(`Server Started at PORT: ${PORT}`);
-})
+  console.log(`🚀 Server running at PORT: ${PORT}`);
+});

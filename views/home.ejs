@@ -2,244 +2,226 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>URL Shortener</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GetHire Links</title>
+
   <style>
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', 'Segoe UI', sans-serif;
     }
 
     body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #e2e8f0;
       min-height: 100vh;
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-      color: #2c3e50;
     }
 
     .container {
-      max-width: 960px;
-      margin: 2rem auto;
-      padding: 0 1.5rem;
+      max-width: 1100px;
+      margin: auto;
+      padding: 2rem;
     }
 
+    /* 🔥 Header */
     header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
     }
 
     h1 {
-      font-size: 2.5rem;
-      font-weight: 600;
-      color: #2c3e50;
-      margin-bottom: 0.5rem;
+      font-size: 2.8rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #38bdf8, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
     .subtitle {
-      font-size: 1rem;
-      color: #7f8c8d;
-      max-width: 600px;
-      margin: 0 auto;
+      color: #94a3b8;
+      margin-top: 0.5rem;
     }
 
+    /* 🔥 Card */
     .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
+      background: rgba(255,255,255,0.05);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
       padding: 2rem;
       margin-bottom: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
+    /* 🔥 Input Section */
     .form-group {
       display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+      gap: 10px;
     }
 
-    label {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #34495e;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 0.875rem 1rem;
-      border: 1px solid #d1d8e0;
-      border-radius: 8px;
-      font-size: 1rem;
+    input {
+      flex: 1;
+      padding: 0.9rem;
+      border-radius: 10px;
+      border: none;
       outline: none;
-      transition: border 0.2s ease;
-    }
-
-    input[type="text"]:focus {
-      border-color: #3498db;
-      box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+      font-size: 1rem;
     }
 
     button {
-      margin-top: 1rem;
-      padding: 0.875rem 1.5rem;
-      background: #3498db;
-      color: white;
+      padding: 0.9rem 1.4rem;
+      border-radius: 10px;
       border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      font-weight: 500;
+      background: linear-gradient(to right, #38bdf8, #6366f1);
+      color: white;
+      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s ease;
+      transition: 0.3s ease;
     }
 
     button:hover {
-      background: #2980b9;
+      transform: scale(1.05);
     }
 
+    /* 🔥 Result */
     .result {
-      background: #e8f4fd;
-      border-radius: 8px;
-      padding: 0.875rem 1rem;
       margin-top: 1rem;
-      font-size: 0.95rem;
+      padding: 1rem;
+      background: rgba(56,189,248,0.1);
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .result a {
-      color: #2980b9;
+      color: #38bdf8;
       text-decoration: none;
       font-weight: 500;
     }
 
-    .result a:hover {
-      text-decoration: underline;
+    .copy-btn {
+      background: #22c55e;
     }
 
-    .links-table {
+    /* 🔥 Table */
+    table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 1rem;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 12px rgba(149, 157, 165, 0.1);
     }
 
-    .links-table th,
-    .links-table td {
+    th {
       text-align: left;
-      padding: 0.875rem 1rem;
-    }
-
-    .links-table th {
-      background: #f8fafc;
-      color: #34495e;
-      font-weight: 600;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .links-table tbody tr {
-      border-bottom: 1px solid #e6eaf0;
-    }
-
-    .links-table tbody tr:hover {
-      background: #f8fafc;
-    }
-
-    .links-table td {
-      font-size: 0.95rem;
-      color: #4b5563;
-    }
-
-    .short-id {
-      font-weight: 500;
-      color: #2c3e50;
-    }
-
-    .redirect-url {
+      padding: 12px;
+      color: #94a3b8;
       font-size: 0.85rem;
-      color: #7f8c8d;
-      word-break: break-all;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 14px 12px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+
+    tr:hover {
+      background: rgba(255,255,255,0.05);
     }
 
     .clicks {
-      font-weight: 600;
+      font-weight: bold;
+      color: #22c55e;
     }
 
-    @media (max-width: 768px) {
-      h1 {
-        font-size: 2rem;
-      }
-
-      .card {
-        padding: 1.5rem;
-      }
-
-      .links-table th,
-      .links-table td {
-        padding: 0.6rem 0.8rem;
-      }
+    .short-link {
+      color: #38bdf8;
+      text-decoration: none;
     }
+
   </style>
 </head>
+
 <body>
-  <div class="container">
-    <header>
-      <h1>🔗 URL Shortener</h1>
-      <p class="subtitle">Shorten long links and track clicks in one place.</p>
-    </header>
 
-    <div class="card">
-      <form method="post" action="/url">
-        <div class="form-group">
-          <label for="url">Enter your URL</label>
-          <input
-            type="text"
-            id="url"
-            name="url"
-            placeholder="https://example.com"
-            required
-          />
-          <button type="submit">Generate Short URL</button>
-        </div>
-      </form>
+<div class="container">
 
-      <% if (locals.id) { %>
-        <div class="result">
-          <p>
-            URL Generated:
-            <a href="http://localhost:8000/url/<%= id %>" target="_blank">
-              http://localhost:8000/url/<%= id %>
-            </a>
-          </p>
-        </div>
-      <% } %>
-    </div>
+  <!-- 🔥 HERO -->
+  <header>
+    <h1>🚀 Link Shortener</h1>
+    <p class="subtitle">Create, manage & track your links like a pro</p>
+  </header>
 
-    <% if (locals.urls && urls.length > 0) { %>
-      <div class="card">
-        <h2>Your Shortened Links</h2>
-        <table class="links-table">
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Short ID</th>
-              <th>Redirect URL</th>
-              <th>Clicks</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% urls.forEach((url, index) => { %>
-              <tr>
-                <td><%= index + 1 %></td>
-                <td class="short-id"><%= url.shortId %></td>
-                <td class="redirect-url"><%= url.redirectURL %></td>
-                <td class="clicks"><%= url.visitHistory.length %></td>
-              </tr>
-            <% }) %>
-          </tbody>
-        </table>
+  <!-- 🔥 CREATE LINK -->
+  <div class="card">
+    <form method="post" action="/url">
+      <div class="form-group">
+        <input type="text" name="url" placeholder="Paste your long URL here..." required />
+        <button type="submit">Shorten</button>
+      </div>
+    </form>
+
+    <% if (locals.id) { %>
+      <div class="result">
+        <a id="shortUrl" href="http://localhost:8000/url/<%= id %>" target="_blank">
+          http://localhost:8000/url/<%= id %>
+        </a>
+        <button class="copy-btn" onclick="copyLink()">Copy</button>
       </div>
     <% } %>
   </div>
+
+  <!-- 🔥 TABLE -->
+  <% if (locals.urls && urls.length > 0) { %>
+  <div class="card">
+    <h2>Your Links</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Short Link</th>
+          <th>Original URL</th>
+          <th>Clicks</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <% urls.forEach((url, index) => { %>
+          <tr>
+            <td><%= index + 1 %></td>
+
+            <td>
+              <a class="short-link" href="/url/<%= url.shortId %>" target="_blank">
+                <%= url.shortId %>
+              </a>
+            </td>
+
+            <td style="font-size: 0.85rem; color: #94a3b8;">
+              <%= url.redirectURL %>
+            </td>
+
+            <td class="clicks">
+              <%= url.visitHistory.length %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <% } %>
+
+</div>
+
+<!-- 🔥 Copy Script -->
+<script>
+  function copyLink() {
+    const text = document.getElementById("shortUrl").innerText;
+    navigator.clipboard.writeText(text);
+    alert("Copied to clipboard!");
+  }
+</script>
+
 </body>
 </html>
